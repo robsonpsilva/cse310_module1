@@ -4,7 +4,8 @@
 
 <h3>Bookstore Management</h3>
 
-<!-- Toast container centralizado no topo -->
+<!-- Toast container fixed at the top center.
+     Displays feedback messages (success, error, warning, info) after user actions. -->
 <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-1">
     @if (!string.IsNullOrEmpty(message))
     {
@@ -13,6 +14,7 @@
                 <div class="toast-body">
                     @message
                 </div>
+                <!-- Close button to manually dismiss the toast -->
                 <button type="button" class="btn-close btn-close-white me-2 m-auto"
                         @onclick="() => message = null"></button>
             </div>
@@ -20,7 +22,7 @@
     }
 </div>
 
-<!-- Search bar -->
+<!-- Search bar for filtering books by Title, Author, or ISBN -->
 <div style="display:flex; gap:12px; margin-bottom:16px;">
     <input type="text" placeholder="Search by Title, Author, or ISBN..."
            @bind="searchTerm" @bind:event="oninput"
@@ -28,6 +30,7 @@
     <button class="button" @onclick="ExecuteSearch">Search</button>
 </div>
 
+<!-- Conditional rendering based on book list state -->
 @if (books is null)
 {
     <p><em>Loading books...</em></p>
@@ -38,6 +41,7 @@ else if (!books.Any())
 }
 else
 {
+    <!-- Table displaying book details and actions -->
     <table class="table">
         <thead>
             <tr>
@@ -52,6 +56,7 @@ else
                 <td>@b.Author</td>
                 <td>@b.ISBN</td>
                 <td>
+                    <!-- Status badge: green if available, yellow if borrowed -->
                     @if (b.IsAvailable)
                     {
                         <span class="badge bg-success fs-6">Available</span>
@@ -62,6 +67,7 @@ else
                     }
                 </td>
                 <td>
+                    <!-- Action buttons: Borrow if available, Return if borrowed -->
                     @if (b.IsAvailable)
                     {
                         <button class="btn btn-primary btn-sm fs-6" @onclick="() => OpenBorrowModal(b)">Borrow</button>
@@ -77,6 +83,7 @@ else
     </table>
 }
 
+<!-- Borrow modal displayed when user clicks "Borrow" -->
 @if (showBorrowModal)
 {
     <div class="modal-backdrop"></div>
@@ -85,10 +92,12 @@ else
             <div class="modal-header"><strong>Borrow Book: @selectedBook?.Title</strong></div>
             <div class="modal-body">
                 <label>Borrower name</label>
+                <!-- Input for borrower name -->
                 <input class="form-control border-dark" @bind="borrowerName" />
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" @onclick="CloseBorrowModal">Cancel</button>
+                <!-- Confirm button disabled until borrower name is provided -->
                 <button class="btn btn-modal-confirm" @onclick="BorrowBook" disabled="@string.IsNullOrWhiteSpace(borrowerName)">Confirm</button>
             </div>
         </div>
@@ -96,32 +105,45 @@ else
 }
 
 @code {
+    // Holds the list of books retrieved from the database
     private List<Book>? books;
+
+    // Current search term entered by the user
     private string searchTerm = string.Empty;
+
+    // Controls whether the borrow modal is visible
     private bool showBorrowModal = false;
+
+    // The book currently selected for borrowing
     private Book? selectedBook;
+
+    // Name of the borrower entered in the modal
     private string borrowerName = string.Empty;
 
-    // Toast state
-    private string? message;
-    private string toastType = "success"; // success, danger, warning, info
-    private System.Timers.Timer? toastTimer;
+    // Toast state variables
+    private string? message;              // Message text
+    private string toastType = "success"; // Toast style: success, danger, warning, info
+    private System.Timers.Timer? toastTimer; // Timer to auto-hide toast
 
+    // Load books when the component initializes
     protected override async Task OnInitializedAsync()
     {
         books = await BookService.GetBooksAsync();
     }
 
+    // Handle Enter key press in the search box
     private async Task HandleEnterKey(KeyboardEventArgs e)
     {
         if (e.Key == "Enter") await ExecuteSearch();
     }
 
+    // Execute search using BookService
     private async Task ExecuteSearch()
     {
         books = await BookService.SearchAsync(searchTerm);
     }
 
+    // Open borrow modal for a specific book
     private void OpenBorrowModal(Book book)
     {
         selectedBook = book;
@@ -129,12 +151,14 @@ else
         showBorrowModal = true;
     }
 
+    // Close borrow modal and reset state
     private void CloseBorrowModal()
     {
         showBorrowModal = false;
         selectedBook = null;
     }
 
+    // Borrow selected book
     private async Task BorrowBook()
     {
         if (selectedBook is null || string.IsNullOrWhiteSpace(borrowerName))
@@ -153,6 +177,7 @@ else
         }
     }
 
+    // Return a borrowed book
     private async Task ReturnBook(int bookId)
     {
         try
@@ -167,12 +192,13 @@ else
         }
     }
 
+    // Display a toast message and auto-hide after 3 seconds
     private void ShowToast(string msg, string type)
     {
         message = msg;
         toastType = type;
 
-        // Timer para esconder automaticamente após 3 segundos
+        // Timer automatically hides the toast after 3 seconds
         toastTimer?.Dispose();
         toastTimer = new System.Timers.Timer(3000);
         toastTimer.Elapsed += (_, __) =>
