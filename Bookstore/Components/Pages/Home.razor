@@ -1,0 +1,152 @@
+﻿@page "/"
+@using Bookstore.Data
+@inject BookService BookService
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<h3>Bookstore Management</h3>
+
+<!-- Search bar -->
+<div style="display:flex; gap:12px; margin-bottom:16px;">
+    <input type="text" placeholder="Search by Title, Author, or ISBN..."
+           @bind="searchTerm" @bind:event="oninput"
+           @onkeyup="HandleEnterKey" class="form-control" />
+    <button class="button" @onclick="ExecuteSearch">Search</button>
+</div>
+
+@if (books is null)
+{
+    <p><em>Loading books...</em></p>
+}
+else if (!books.Any())
+{
+    <p><em>No books found.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th><th>Author</th><th>ISBN</th><th>Status</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var b in books)
+        {
+            <tr>
+                <td>@b.Title</td>
+                <td>@b.Author</td>
+                <td>@b.ISBN</td>
+                <td>
+                    @if (b.IsAvailable)
+                    {
+                        <span class="badge success">Available</span>
+                    }
+                    else
+                    {
+                        <span class="badge warning">Borrowed by @b.BorrowerName</span>
+                    }
+                </td>
+                <td>
+                    @if (b.IsAvailable)
+                    {
+                        <button class="button" @onclick="() => OpenBorrowModal(b)">Borrow</button>
+                    }
+                    else
+                    {
+                        <button class="button success" @onclick="() => ReturnBook(b.BookId)">Return</button>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (showBorrowModal)
+{
+    <div class="modal-backdrop"></div>
+    <div class="modal">
+        <div class="modal-card">
+            <div class="modal-header"><strong>Borrow Book: @selectedBook?.Title</strong></div>
+            <div class="modal-body">
+                <label>Borrower name</label>
+                <input class="form-control" @bind="borrowerName" />
+            </div>
+            <div class="modal-footer">
+                <button class="button secondary" @onclick="CloseBorrowModal">Cancel</button>
+                <button class="button" @onclick="BorrowBook" disabled="@string.IsNullOrWhiteSpace(borrowerName)">Confirm</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Book>? books;
+    private string searchTerm = string.Empty;
+    private bool showBorrowModal = false;
+    private Book? selectedBook;
+    private string borrowerName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await BookService.GetBooksAsync();
+    }
+
+    private async Task HandleEnterKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await ExecuteSearch();
+    }
+
+    private async Task ExecuteSearch()
+    {
+        books = await BookService.SearchAsync(searchTerm);
+    }
+
+    private void OpenBorrowModal(Book book)
+    {
+        selectedBook = book;
+        borrowerName = string.Empty;
+        showBorrowModal = true;
+    }
+
+    private void CloseBorrowModal()
+    {
+        showBorrowModal = false;
+        selectedBook = null;
+    }
+
+    private async Task BorrowBook()
+    {
+        if (selectedBook is null || string.IsNullOrWhiteSpace(borrowerName))
+            return;
+
+        try
+        {
+            await BookService.BorrowAsync(selectedBook.BookId, borrowerName);
+            CloseBorrowModal();
+            await ExecuteSearch();
+            await JSRuntime.InvokeVoidAsync("alert", "Book borrowed successfully.");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+    }
+
+    private async Task ReturnBook(int bookId)
+    {
+        try
+        {
+            var confirm = await JSRuntime.InvokeAsync<bool>("confirm", "Return this book?");
+            if (!confirm) return;
+
+            await BookService.ReturnAsync(bookId);
+            await ExecuteSearch();
+            await JSRuntime.InvokeVoidAsync("alert", "Book returned successfully.");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+    }
+}
