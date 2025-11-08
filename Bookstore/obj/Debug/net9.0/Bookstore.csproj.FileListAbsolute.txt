@@ -143,7 +143,6 @@
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/scopedcss/Components/Layout/NavMenu.razor.rz.scp.css
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/scopedcss/bundle/Bookstore.styles.css
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/scopedcss/projectbundle/Bookstore.bundle.scp.css
-/Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/compressed/6pnt1g3on0-khy4lop6wu.gz
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/compressed/q6ds46a8gn-bqjiyaj88i.gz
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/compressed/i7av3jehxp-c2jlpeoesf.gz
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/compressed/azzbxymm0s-erw9l3u2r3.gz
@@ -200,3 +199,4 @@
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/Bookstore.pdb
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/Bookstore.genruntimeconfig.cache
 /Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/ref/Bookstore.dll
+/Users/robsonpaulodasilva/Library/CloudStorage/GoogleDrive-robson_p_s@yahoo.com.br/Meu Drive/Estudo/BYU/cse310/cse310_module1/Bookstore/obj/Debug/net9.0/compressed/6pnt1g3on0-00d76wj9ka.gz

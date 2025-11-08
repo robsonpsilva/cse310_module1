@@ -1,5 +1,4 @@
-﻿
-@namespace Bookstore.Components.Pages
+﻿@namespace Bookstore.Components.Pages
 @code {
     // vazio, só para gerar a classe App
 }
@@ -19,7 +18,14 @@
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveServer"/>
+    <!-- Roteamento com interatividade habilitada -->
+    <Routes @rendermode="InteractiveServer" />
+
+    <!-- Container para Toasts (notificações elegantes) -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <DynamicComponent Type="@typeof(Bookstore.Components.Shared.Toast)" />
+    </div>
+
     <script src="_framework/blazor.web.js"></script>
 </body>
 

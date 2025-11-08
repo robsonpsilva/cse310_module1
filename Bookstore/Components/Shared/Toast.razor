@@ -1,0 +1,19 @@
+@namespace Bookstore.Components.Shared
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="toast show align-items-center text-bg-@ToastType border-0 mb-2. ">
+        <div class="d-flex">
+            <div class="toast-body">
+                @Message
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    @onclick="() => Message = null"></button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string ToastType { get; set; } = "success"; // success, danger, warning, info
+}

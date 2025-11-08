@@ -1,9 +1,24 @@
 ﻿@page "/"
 @using Bookstore.Data
 @inject BookService BookService
-@inject Microsoft.JSInterop.IJSRuntime JSRuntime
 
 <h3>Bookstore Management</h3>
+
+<!-- Toast container centralizado no topo -->
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-1">
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="toast show align-items-center text-bg-@toastType border-0 mb-2">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @message
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        @onclick="() => message = null"></button>
+            </div>
+        </div>
+    }
+</div>
 
 <!-- Search bar -->
 <div style="display:flex; gap:12px; margin-bottom:16px;">
@@ -39,21 +54,21 @@ else
                 <td>
                     @if (b.IsAvailable)
                     {
-                        <span class="badge success">Available</span>
+                        <span class="badge bg-success fs-6">Available</span>
                     }
                     else
                     {
-                        <span class="badge warning">Borrowed by @b.BorrowerName</span>
+                        <span class="badge bg-warning text-dark fs-6">Borrowed by @b.BorrowerName</span>
                     }
                 </td>
                 <td>
                     @if (b.IsAvailable)
                     {
-                        <button class="button" @onclick="() => OpenBorrowModal(b)">Borrow</button>
+                        <button class="btn btn-primary btn-sm fs-6" @onclick="() => OpenBorrowModal(b)">Borrow</button>
                     }
                     else
                     {
-                        <button class="button success" @onclick="() => ReturnBook(b.BookId)">Return</button>
+                        <button class="btn btn-success btn-sm fs-6" @onclick="() => ReturnBook(b.BookId)">Return</button>
                     }
                 </td>
             </tr>
@@ -73,8 +88,8 @@ else
                 <input class="form-control" @bind="borrowerName" />
             </div>
             <div class="modal-footer">
-                <button class="button secondary" @onclick="CloseBorrowModal">Cancel</button>
-                <button class="button" @onclick="BorrowBook" disabled="@string.IsNullOrWhiteSpace(borrowerName)">Confirm</button>
+                <button class="btn btn-secondary" @onclick="CloseBorrowModal">Cancel</button>
+                <button class="btn btn-primary" @onclick="BorrowBook" disabled="@string.IsNullOrWhiteSpace(borrowerName)">Confirm</button>
             </div>
         </div>
     </div>
@@ -86,6 +101,11 @@ else
     private bool showBorrowModal = false;
     private Book? selectedBook;
     private string borrowerName = string.Empty;
+
+    // Toast state
+    private string? message;
+    private string toastType = "success"; // success, danger, warning, info
+    private System.Timers.Timer? toastTimer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,11 +145,11 @@ else
             await BookService.BorrowAsync(selectedBook.BookId, borrowerName);
             CloseBorrowModal();
             await ExecuteSearch();
-            await JSRuntime.InvokeVoidAsync("alert", "Book borrowed successfully.");
+            ShowToast("Book borrowed successfully!", "success");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            ShowToast($"Error: {ex.Message}", "danger");
         }
     }
 
@@ -137,16 +157,31 @@ else
     {
         try
         {
-            var confirm = await JSRuntime.InvokeAsync<bool>("confirm", "Return this book?");
-            if (!confirm) return;
-
             await BookService.ReturnAsync(bookId);
             await ExecuteSearch();
-            await JSRuntime.InvokeVoidAsync("alert", "Book returned successfully.");
+            ShowToast("Book returned successfully!", "success");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            ShowToast($"Error: {ex.Message}", "danger");
         }
+    }
+
+    private void ShowToast(string msg, string type)
+    {
+        message = msg;
+        toastType = type;
+
+        // Timer para esconder automaticamente após 3 segundos
+        toastTimer?.Dispose();
+        toastTimer = new System.Timers.Timer(3000);
+        toastTimer.Elapsed += (_, __) =>
+        {
+            message = null;
+            InvokeAsync(StateHasChanged);
+            toastTimer?.Dispose();
+        };
+        toastTimer.AutoReset = false;
+        toastTimer.Start();
     }
 }
