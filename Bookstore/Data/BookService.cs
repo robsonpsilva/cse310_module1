@@ -2,18 +2,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookstore.Data
 {
-    // Service class that encapsulates business logic for managing books.
-    // Provides methods for retrieving, searching, borrowing, and returning books.
-    public class BookService
+    // Service class that inherits from BaseService.
+    public class BookService : BaseService
     {
-        // Database context used to interact with the underlying SQLite (or other) database.
-        private readonly BookstoreDbContext _context;
-
-        // Constructor that receives the DbContext via dependency injection.
-        public BookService(BookstoreDbContext context)
+        
+        // Constructor: Calls the base class constructor (BaseService)
+        // to initialize the _context.
+        public BookService(BookstoreDbContext context) : base(context)
         {
-            _context = context;
+            // The body of the constructor is empty, as the work was done by the base.
         }
+
+        // The following methods continue to work perfectly using the inherited '_context'.
 
         // Retrieves all books from the database, ordered alphabetically by title.
         public async Task<List<Book>> GetBooksAsync()
@@ -22,8 +22,6 @@ namespace Bookstore.Data
         }
 
         // Searches for books by title, author, or ISBN.
-        // If the search term is empty, returns all books.
-        // Uses EF.Functions.Like for case-insensitive pattern matching.
         public async Task<List<Book>> SearchAsync(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
@@ -41,8 +39,6 @@ namespace Bookstore.Data
         }
 
         // Marks a book as borrowed.
-        // Validates that the book exists and is currently available.
-        // Updates availability, borrower name, and borrow date.
         public async Task BorrowAsync(int bookId, string borrowerName)
         {
             var book = await _context.Books.FindAsync(bookId);
@@ -57,8 +53,6 @@ namespace Bookstore.Data
         }
 
         // Marks a book as returned.
-        // Validates that the book exists and is currently borrowed.
-        // Resets availability, borrower name, and borrow date.
         public async Task ReturnAsync(int bookId)
         {
             var book = await _context.Books.FindAsync(bookId);
