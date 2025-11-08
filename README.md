@@ -14,13 +14,13 @@ The goal is to practice basic application development skills by building an appl
 
 # Youtube link
 
-[BookStore](https://youtu.be/oH4_1DvZG8k)
+[BookStore](https://youtu.be/bc_WogiuBfg)
 
 # Development Environment
 
 The development environment includes:
 a) Visual Studio Code.
-b) SQLLitey
+b) SQLite
 
 #Programming Language
 
